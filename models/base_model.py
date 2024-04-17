@@ -26,23 +26,15 @@ class BaseModel:
                             default=(datetime.utcnow()))
 
         if kwargs:
-            for key, value in kwargs.items():
-                if (key != '__class__'):
-                    setattr(self, key, value)
-            if 'created_at' in kwargs:
-                self.created_at = datetime.strptime(
-                        kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
-
-            if 'updated_at' in kwargs:
-                self.updated_at = datetime.strptime(
-                        kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
-
+            for key, v in kwargs.items():
+                if key == "created_at" or key == "updated_at":
+                    v = datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%f")
+                if key != "__class__":
+                    setattr(self, key, v)
             if "id" not in kwargs:
                 self.id = str(uuid.uuid4())
-
             if "created_at" not in kwargs:
                 self.created_at = datetime.now()
-
             if "updated_at" not in kwargs:
                 self.updated_at = datetime.now()
         else:
@@ -65,13 +57,14 @@ class BaseModel:
         models.storage.save()
 
     def to_dict(self):
-        """Returns a dictionary containing all keys/values
-        of __dict__ of the instance"""
-        dictionary = self.__dict__.copy()
-        dictionary['__class__'] = self.__class__.__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
-        return dictionary
+        """creates dictionary of the class"""
+        my_dict = dict(self.__dict__)
+        my_dict["__class__"] = str(type(self).__name__)
+        my_dict["created_at"] = self.created_at.isoformat()
+        my_dict["updated_at"] = self.updated_at.isoformat()
+        if '_sa_instance_state' in my_dict.keys():
+            del my_dict['_sa_instance_state']
+        return my_dict
 
     def delete(self):
         """delete object"""
