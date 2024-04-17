@@ -119,13 +119,13 @@ class HBNBCommand(cmd.Cmd):
             if not args:
                 raise SyntaxError()
             params_list = args.split(" ")
-	    values_dict = {}
+            values_dict = {}
             for arg in params_list[1:]:
                 split_params = arg.split("=")
-	        split_params[1] = eval(split_params[1]
-		if type(split_params[1]) is str:
-		    split_params[1] = split_params[1].replace("_", " ").replace('"', '\\"')
-		values_dict[split_params[0]] = split_params[1]
+                split_params[1] = eval(split_params[1])
+                if type(split_params[1]) is str:
+                    split_params[1] = split_params[1].replace("_", " ").replace('"', '\\"')
+                values_dict[split_params[0]] = split_params[1]
         except SyntaxError:
             print("** class name missing **")
         except NameError:
